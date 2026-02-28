@@ -1,0 +1,8 @@
+{
+  "name": "FLOW365 PRO",
+  "short_name": "FLOW365",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2C73D2"
+}

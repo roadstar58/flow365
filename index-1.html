@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 FLOW365 PRO V6-1.3</title>
+<link rel="manifest" href="manifest.json">
+<style>
+body{margin:0;font-family:Arial;background:#fff}
+h1{text-align:center;margin:0;padding:10px;border-bottom:1px solid #ddd}
+.calendar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:6px}
+.month{display:flex;flex-direction:column;border-radius:8px;overflow:hidden;background:#f3f3f3}
+.title{padding:5px;color:#fff;font-weight:bold;text-align:center}
+.days{display:grid;grid-template-columns:repeat(7,1fr);flex:1}
+.day{border:1px solid #eee;padding:3px;font-size:10px;cursor:pointer}
+.memo{font-size:9px;color:#333;white-space:pre-wrap}
+.major{border-top:1px solid #ddd;padding:4px;font-size:9px;cursor:pointer;background:#fff}
+.day:hover,.major:hover{background:#ffeaa7}
+</style>
+</head>
+<body>
+<h1>2026 FLOW365 PRO V6-1.3</h1>
+<div class="calendar" id="calendar"></div>
+<script>
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js");
+}
+const year=2026;
+const colors=["#FF6B6B","#FF9F43","#FFD93D","#6BCB77","#4D96FF","#6A67CE","#C65D7B","#00C9A7","#845EC2","#FF9671","#2C73D2","#008E9B"];
+const cal=document.getElementById("calendar");
+let memos=JSON.parse(localStorage.getItem("flow365_memo")||"{}");
+let majorMemo=JSON.parse(localStorage.getItem("flow365_month")||"{}");
+for(let m=0;m<12;m++){
+  let block=document.createElement("div");
+  block.className="month";
+  let title=document.createElement("div");
+  title.className="title";
+  title.style.background=colors[m];
+  title.innerText=(m+1)+"월";
+  block.appendChild(title);
+  let daysWrap=document.createElement("div");
+  daysWrap.className="days";
+  let last=new Date(year,m+1,0).getDate();
+  for(let d=1;d<=last;d++){
+    let cell=document.createElement("div");
+    cell.className="day";
+    let key=year+"-"+(m+1)+"-"+d;
+    let memoDiv=document.createElement("div");
+    memoDiv.className="memo";
+    memoDiv.textContent=memos[key]||"";
+    cell.innerHTML="<b>"+d+"</b>";
+    cell.appendChild(memoDiv);
+    cell.addEventListener("click",()=>{
+      let input=prompt(key+" 메모 입력",memos[key]||"");
+      if(input!==null){
+        memos[key]=input;
+        localStorage.setItem("flow365_memo",JSON.stringify(memos));
+        memoDiv.textContent=input;
+      }
+    });
+    daysWrap.appendChild(cell);
+  }
+  block.appendChild(daysWrap);
+  let major=document.createElement("div");
+  major.className="major";
+  major.textContent="주요사항: "+(majorMemo[m]||"");
+  major.addEventListener("click",()=>{
+    let input=prompt((m+1)+"월 주요사항 입력",majorMemo[m]||"");
+    if(input!==null){
+      majorMemo[m]=input;
+      localStorage.setItem("flow365_month",JSON.stringify(majorMemo));
+      major.textContent="주요사항: "+input;
+    }
+  });
+  block.appendChild(major);
+  cal.appendChild(block);
+}
+</script>
+</body>
+</html>
